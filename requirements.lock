@@ -8,14 +8,33 @@
 #   with-sources: false
 
 -e file:.
+anyio==4.3.0
+    # via httpx
+certifi==2024.2.2
+    # via httpcore
+    # via httpx
 cffi==1.16.0
     # via sounddevice
+h11==0.14.0
+    # via httpcore
+httpcore==1.0.5
+    # via httpx
+httpx==0.27.0
+    # via ollama
+idna==3.7
+    # via anyio
+    # via httpx
 numpy==1.26.4
     # via voicevox-core
+ollama==0.1.9
+    # via my-servant
 pycparser==2.22
     # via cffi
 pydantic==1.10.15
     # via voicevox-core
+sniffio==1.3.1
+    # via anyio
+    # via httpx
 sounddevice==0.4.6
     # via my-servant
 typing-extensions==4.11.0
