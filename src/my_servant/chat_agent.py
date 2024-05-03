@@ -1,8 +1,7 @@
 from typing import Generator
 import ollama
 from message_log import MessageLog, Role
-
-STOP_CHARACTERS = ["。", "\n"]
+from prompts import SYSTEM_PROMPT
 
 
 class ChatAgent:
@@ -17,6 +16,7 @@ class ChatAgent:
         :param text: Text to be searched.
         :return: Index of the stop character in text.
         """
+        STOP_CHARACTERS = ["。", "\n"]
         for char in STOP_CHARACTERS:
             index = text.find(char)
             if index != -1:
@@ -29,10 +29,10 @@ class ChatAgent:
         :param text: Text to chat with the user.
         """
         self.message_log.push_new_message(Role.USER, text)
-        print(self.message_log.get_messages())
         stream = ollama.chat(
             model="suzume-mul",
-            messages=self.message_log.get_messages(),
+            messages=[{"role": "system", "content": SYSTEM_PROMPT}]
+            + self.message_log.get_messages(),
             stream=True,
         )
         buffer: str = ""
@@ -47,5 +47,6 @@ class ChatAgent:
                     yield sentence
                 buffer = buffer[found + 1 :]
 
-        self.message_log.add_to_last_message(buffer)
-        yield buffer
+        if len(buffer.strip()) > 0:
+            self.message_log.add_to_last_message(buffer)
+            yield buffer
