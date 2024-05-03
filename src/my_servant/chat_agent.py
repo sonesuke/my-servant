@@ -1,10 +1,15 @@
 from typing import Generator
 import ollama
+from message_log import MessageLog, Role
 
 STOP_CHARACTERS = ["。", "\n"]
 
+
 class ChatAgent:
     """Chat agent that uses Ollama API to chat with the user."""
+
+    def __init__(self):
+        self.message_log = MessageLog()
 
     def find_stop_character(self, text: str) -> int:
         """Find the first stop character in the text.
@@ -23,20 +28,24 @@ class ChatAgent:
 
         :param text: Text to chat with the user.
         """
+        self.message_log.push_new_message(Role.USER, text)
+        print(self.message_log.get_messages())
         stream = ollama.chat(
             model="suzume-mul",
-            messages=[
-                {"role": "user", "content": text},
-            ],
+            messages=self.message_log.get_messages(),
             stream=True,
         )
         buffer: str = ""
+        self.message_log.push_new_message(Role.ASSISTANT, "")
         for chunk in stream:
             buffer += chunk["message"]["content"]
             found = self.find_stop_character(buffer)
             if found != -1:
                 sentence = buffer[: found + 1]
                 if len(sentence.strip()) > 0:
+                    self.message_log.add_to_last_message(sentence)
                     yield sentence
                 buffer = buffer[found + 1 :]
+
+        self.message_log.add_to_last_message(buffer)
         yield buffer
