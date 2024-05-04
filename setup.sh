@@ -14,3 +14,5 @@ sudo cp voicevox_core/libonnxruntime*.dylib /usr/local/lib
 huggingface-cli download lightblue/suzume-llama-3-8B-multilingual-gguf ggml-model-Q4_K_M.gguf --local-dir ./models/suzume-llama-3-8b-mul --local-dir-use-symlinks False
 
 ollama create suzume-mul -f models/suzume-llama-3-8b-mul/Modelfile
+ollama pull snowflake-arctic-embed:110m
+ollama pull all-minilm:l6

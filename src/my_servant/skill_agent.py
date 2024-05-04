@@ -2,10 +2,11 @@ import inspect
 import json
 from typing import Callable, get_type_hints
 import ollama
-from prompts import FUNCTION_CALLING_PROMPT
+from prompts import FUNCTION_CALLING_PROMPT, USE_SKILL_PROMPT
+from chat_agent import ChatAgent
 
 
-class SkillAgent:
+class SkillAgent(ChatAgent):
     """Agent that uses Ollama API to call skills."""
 
     def __init__(self, skills: list[Callable]):
@@ -13,6 +14,7 @@ class SkillAgent:
 
         :param skills: List of skills that the agent can use.
         """
+        super().__init__()
         self.skill_functions = skills
         self.skill_jsons = [self.function_to_json(skill) for skill in skills]
 
@@ -92,7 +94,13 @@ class SkillAgent:
         :return: Result of the skill function.
         """
         skill_json = self.select_skill(text)
-        return self.call_skill_function(skill_json)
+        context = "\n".join(
+            [
+                json.dumps(result, ensure_ascii=False, indent=0)
+                for result in self.call_skill_function(skill_json)
+            ]
+        )
+        return self.chat(text, USE_SKILL_PROMPT.format(context=context))
 
 
 if __name__ == "__main__":
