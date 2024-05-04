@@ -4,7 +4,7 @@ from message_log import MessageLog, Role
 from prompts import SYSTEM_PROMPT
 
 
-class ChatAgent:
+class ChatAgent(object):
     """Chat agent that uses Ollama API to chat with the user."""
 
     def __init__(self):
@@ -23,7 +23,9 @@ class ChatAgent:
                 return index
         return -1
 
-    def chat(self, text: str) -> Generator[str, None, None]:
+    def chat(
+        self, text: str, prompt: str = SYSTEM_PROMPT
+    ) -> Generator[str, None, None]:
         """Chat with the user using Ollama API.
 
         :param text: Text to chat with the user.
@@ -31,7 +33,7 @@ class ChatAgent:
         self.message_log.push_new_message(Role.USER, text)
         stream = ollama.chat(
             model="suzume-mul",
-            messages=[{"role": "system", "content": SYSTEM_PROMPT}]
+            messages=[{"role": "system", "content": prompt}]
             + self.message_log.get_messages(),
             stream=True,
         )

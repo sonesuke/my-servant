@@ -10,3 +10,4 @@ wheels/
 .venv
 voicevox_core
 models/**/*.gguf
+data/
